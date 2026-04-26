@@ -1,0 +1,1 @@
+# ResolveAI: Hybrid RAG & Sentiment-Driven Support Agent
