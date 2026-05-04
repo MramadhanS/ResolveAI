@@ -1,142 +1,130 @@
 import streamlit as st
 import requests
 
-# 1. Konfigurasi Halaman - Vibes Profesional
+# 1. Konfigurasi Halaman - Dark Theme Vibes
 st.set_page_config(
-    page_title="ResolveAI | Solusi MyPertamina",
-    page_icon="🛡️",
+    page_title="ResolveAI | Dark Mode",
+    page_icon="🌑",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# 2. Injeksi CSS Kustom - Glassmorphism & Custom Branding
+# 2. Injeksi CSS Kustom - Dark Mode & Neon Accents
 st.markdown("""
 <style>
-    /* Global Background & Font */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-    
-    html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
-    }
-
-    /* Gradient Background untuk Header */
+    /* Mengubah latar belakang seluruh aplikasi ke Dark */
     .stApp {
-        background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+        background-color: #0F172A; /* Slate 900 */
+        color: #F8FAFC;
     }
 
     /* Menyembunyikan elemen bawaan */
     header, footer, #MainMenu {visibility: hidden;}
 
-    /* Styling Container Header */
+    /* Styling Container Header - Glassmorphism Dark */
     .header-container {
-        background: #FFFFFF;
-        padding: 2rem;
-        border-radius: 20px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        background: rgba(30, 41, 59, 0.7); /* Slate 800 with opacity */
+        padding: 2.5rem;
+        border-radius: 24px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         text-align: center;
-        margin-bottom: 2rem;
-        border-top: 5px solid #1E3A8A; /* Border Biru Pertamina */
+        margin-bottom: 2.5rem;
     }
 
     .main-header {
-        font-size: 2rem;
+        font-size: 2.2rem;
         font-weight: 800;
-        color: #1E3A8A;
+        letter-spacing: -0.025em;
+        background: linear-gradient(90deg, #38BDF8, #818CF8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem;
     }
 
     .sub-header {
-        font-size: 1rem;
-        color: #64748B;
-        line-height: 1.5;
+        font-size: 0.95rem;
+        color: #94A3B8;
+        font-weight: 400;
     }
 
-    /* Chat Message Styling */
-    .stChatMessage {
-        background-color: transparent !important;
-        padding: 1rem 0;
+    /* Chat Bubbles Styling */
+    [data-testid="stChatMessage"] {
+        background-color: #1E293B !important; /* Slate 800 */
+        border-radius: 15px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* Custom Avatar Box */
-    [data-testid="stChatMessageAvatarUser"] {
-        background-color: #EF4444 !important; /* Merah Pertamina untuk User */
-    }
-    
-    [data-testid="stChatMessageAvatarAssistant"] {
-        background-color: #1E3A8A !important; /* Biru Pertamina untuk AI */
+    /* Menyesuaikan warna teks input chat */
+    .stChatInput textarea {
+        background-color: #1E293B !important;
+        color: #F8FAFC !important;
+        border: 1px solid #334155 !important;
     }
 
-    /* Input Bar Styling */
-    .stChatInputContainer {
-        padding-bottom: 2rem;
-    }
-
-    /* Info Badge */
-    .status-badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
+    /* Badge Status */
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
         border-radius: 9999px;
-        background-color: #E0F2FE;
-        color: #0369A1;
-        font-size: 0.8rem;
+        background: rgba(56, 189, 248, 0.1);
+        color: #38BDF8;
+        font-size: 0.75rem;
         font-weight: 600;
+        border: 1px solid rgba(56, 189, 248, 0.2);
         margin-top: 1rem;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #0F172A;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 10px;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Bagian Header UI - Menggunakan Container
-st.markdown(f"""
+# 3. Header UI
+st.markdown("""
 <div class="header-container">
-    <div class="main-header">🛡️ ResolveAI</div>
+    <div class="main-header">ResolveAI Assistant</div>
     <div class="sub-header">
-        Asisten Digital Pendaftaran Subsidi Tepat MyPertamina.<br>
-        Siap membantu kendala Foto STNK, KTP, dan Kode OTP Anda.
+        Sistem Pakar Resolusi Kendala MyPertamina.<br>
+        Navigasi cerdas untuk pendaftaran dan verifikasi data Anda.
     </div>
-    <div class="status-badge">Sistem Terintegrasi Knowledge Base 2026</div>
+    <div class="status-pill">● Neural Engine Active</div>
 </div>
 """, unsafe_allow_html=True)
 
 # 4. Inisialisasi Memori Obrolan
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Halo! Saya **ResolveAI**. Jika Anda mengalami kendala saat upload STNK atau OTP belum masuk, silakan tanyakan di sini. Apa yang bisa saya bantu?"}
+        {"role": "assistant", "content": "Halo, Rama. Ada kendala teknis apa dengan MyPertamina hari ini? Saya siap menganalisis solusi dari database terbaru."}
     ]
 
-# 5. Quick Actions (Agar tidak flat, tambahkan tombol bantuan cepat)
-st.write("---")
-cols = st.columns(3)
-with cols[0]:
-    if st.button("📸 Masalah Foto STNK"):
-        st.session_state.temp_prompt = "Kenapa foto STNK saya ditolak terus?"
-with cols[1]:
-    if st.button("📧 OTP Tidak Masuk"):
-        st.session_state.temp_prompt = "Kode OTP saya tidak masuk ke email"
-with cols[2]:
-    if st.button("🚗 Nopol Terdaftar"):
-        st.session_state.temp_prompt = "Beli mobil bekas tapi nopol sudah terdaftar"
-
-# 6. Tampilkan Riwayat Obrolan
+# 5. Tampilkan Riwayat Obrolan
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 7. Logika Input
-prompt = st.chat_input("Ketik kendala MyPertamina Anda...")
-
-# Handle tombol quick action jika diklik
-if "temp_prompt" in st.session_state:
-    prompt = st.session_state.temp_prompt
-    del st.session_state.temp_prompt
-
-if prompt:
+# 6. Area Input Chat
+if prompt := st.chat_input("Gambarkan kendala Anda secara detail..."):
+    # Tampilkan pesan user
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
+    # Respon Assistant
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
-        message_placeholder.markdown("🔍 *Mencari solusi di database MyPertamina...*")
+        message_placeholder.markdown("⚡ *Menganalisis repositori pengetahuan...*")
         
         try:
             response = requests.post(
@@ -150,9 +138,9 @@ if prompt:
                 message_placeholder.markdown(jawaban_ai)
                 st.session_state.messages.append({"role": "assistant", "content": jawaban_ai})
             else:
-                message_placeholder.error(f"Server sibuk (Error {response.status_code})")
+                message_placeholder.error(f"Koneksi Server Gagal ({response.status_code})")
                 
         except requests.exceptions.ConnectionError:
-            message_placeholder.markdown("⚠️ **Backend Offline.** Jalankan `uvicorn main:app` di terminal.")
+            message_placeholder.markdown("⚠️ **Terminal Error.** Pastikan backend FastAPI Anda aktif di port 8000.")
         except Exception as e:
-            message_placeholder.markdown(f"⚠️ **Error:** {e}")
+            message_placeholder.markdown(f"⚠️ **System Failure:** {e}")
