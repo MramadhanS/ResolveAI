@@ -1,84 +1,158 @@
 import streamlit as st
 import requests
 
-# 1. Konfigurasi Halaman (Harus diletakkan paling atas)
+# 1. Konfigurasi Halaman - Vibes Profesional
 st.set_page_config(
-    page_title="ResolveAI | Pertamina CS",
-    page_icon="🔥",
+    page_title="ResolveAI | Solusi MyPertamina",
+    page_icon="🛡️",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# 2. Injeksi CSS Kustom untuk Estetika Profesional dan Minimalis
+# 2. Injeksi CSS Kustom - Glassmorphism & Custom Branding
 st.markdown("""
 <style>
-    /* Menyembunyikan menu bawaan Streamlit agar terlihat seperti aplikasi mandiri */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    /* Global Background & Font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
     
-    /* Desain Header */
-    .main-header {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #1E3A8A; /* Biru Korporat */
-        margin-bottom: 0rem;
-        padding-bottom: 0rem;
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
     }
-    .sub-header {
-        font-size: 1.1rem;
-        color: #64748B;
+
+    /* Gradient Background untuk Header */
+    .stApp {
+        background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+    }
+
+    /* Menyembunyikan elemen bawaan */
+    header, footer, #MainMenu {visibility: hidden;}
+
+    /* Styling Container Header */
+    .header-container {
+        background: #FFFFFF;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        text-align: center;
         margin-bottom: 2rem;
+        border-top: 5px solid #1E3A8A; /* Border Biru Pertamina */
+    }
+
+    .main-header {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1E3A8A;
+        margin-bottom: 0.5rem;
+    }
+
+    .sub-header {
+        font-size: 1rem;
+        color: #64748B;
+        line-height: 1.5;
+    }
+
+    /* Chat Message Styling */
+    .stChatMessage {
+        background-color: transparent !important;
+        padding: 1rem 0;
+    }
+
+    /* Custom Avatar Box */
+    [data-testid="stChatMessageAvatarUser"] {
+        background-color: #EF4444 !important; /* Merah Pertamina untuk User */
+    }
+    
+    [data-testid="stChatMessageAvatarAssistant"] {
+        background-color: #1E3A8A !important; /* Biru Pertamina untuk AI */
+    }
+
+    /* Input Bar Styling */
+    .stChatInputContainer {
+        padding-bottom: 2rem;
+    }
+
+    /* Info Badge */
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        background-color: #E0F2FE;
+        color: #0369A1;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 1rem;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Bagian Header UI
-st.markdown('<div class="main-header">ResolveAI Assistant</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Pusat Bantuan & Informasi Layanan LPG 3 Kg</div>', unsafe_allow_html=True)
-st.divider()
+# 3. Bagian Header UI - Menggunakan Container
+st.markdown(f"""
+<div class="header-container">
+    <div class="main-header">🛡️ ResolveAI</div>
+    <div class="sub-header">
+        Asisten Digital Pendaftaran Subsidi Tepat MyPertamina.<br>
+        Siap membantu kendala Foto STNK, KTP, dan Kode OTP Anda.
+    </div>
+    <div class="status-badge">Sistem Terintegrasi Knowledge Base 2026</div>
+</div>
+""", unsafe_allow_html=True)
 
-# 4. Inisialisasi Memori Obrolan (Session State)
+# 4. Inisialisasi Memori Obrolan
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Halo! Saya adalah ResolveAI, asisten virtual Anda. Ada yang bisa saya bantu terkait regulasi atau layanan pangkalan LPG 3 Kg hari ini?"}
+        {"role": "assistant", "content": "Halo! Saya **ResolveAI**. Jika Anda mengalami kendala saat upload STNK atau OTP belum masuk, silakan tanyakan di sini. Apa yang bisa saya bantu?"}
     ]
 
-# 5. Tampilkan Riwayat Obrolan
+# 5. Quick Actions (Agar tidak flat, tambahkan tombol bantuan cepat)
+st.write("---")
+cols = st.columns(3)
+with cols[0]:
+    if st.button("📸 Masalah Foto STNK"):
+        st.session_state.temp_prompt = "Kenapa foto STNK saya ditolak terus?"
+with cols[1]:
+    if st.button("📧 OTP Tidak Masuk"):
+        st.session_state.temp_prompt = "Kode OTP saya tidak masuk ke email"
+with cols[2]:
+    if st.button("🚗 Nopol Terdaftar"):
+        st.session_state.temp_prompt = "Beli mobil bekas tapi nopol sudah terdaftar"
+
+# 6. Tampilkan Riwayat Obrolan
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 6. Menangani Input Pengguna
-if prompt := st.chat_input("Ketik pertanyaan Anda di sini..."):
-    # Tampilkan pesan pengguna di layar
+# 7. Logika Input
+prompt = st.chat_input("Ketik kendala MyPertamina Anda...")
+
+# Handle tombol quick action jika diklik
+if "temp_prompt" in st.session_state:
+    prompt = st.session_state.temp_prompt
+    del st.session_state.temp_prompt
+
+if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Siapkan animasi loading saat AI berpikir
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
-        message_placeholder.markdown("*(Mengetik jawaban...)*")
+        message_placeholder.markdown("🔍 *Mencari solusi di database MyPertamina...*")
         
         try:
-            # Mengirim pertanyaan ke Backend FastAPI kita
             response = requests.post(
                 "http://127.0.0.1:8000/api/chat",
                 json={"pesan": prompt},
-                timeout=30 # Batas waktu tunggu 30 detik
+                timeout=30 
             )
             
             if response.status_code == 200:
-                # Ambil jawaban JSON dari Backend
                 jawaban_ai = response.json()["jawaban"]
                 message_placeholder.markdown(jawaban_ai)
-                # Simpan jawaban ke memori
                 st.session_state.messages.append({"role": "assistant", "content": jawaban_ai})
             else:
-                st.error(f"Error dari server: {response.status_code}")
+                message_placeholder.error(f"Server sibuk (Error {response.status_code})")
                 
         except requests.exceptions.ConnectionError:
-            message_placeholder.markdown("⚠️ **Koneksi Terputus.** Pastikan server FastAPI (main.py) sedang menyala di terminal lain.")
+            message_placeholder.markdown("⚠️ **Backend Offline.** Jalankan `uvicorn main:app` di terminal.")
         except Exception as e:
-            message_placeholder.markdown(f"⚠️ **Terjadi Kesalahan:** {e}")
+            message_placeholder.markdown(f"⚠️ **Error:** {e}")
