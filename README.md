@@ -19,8 +19,8 @@ ResolveAI hadir sebagai jembatan informasi. Alih-alih mencari satu per satu di F
 
 ## 🛠️ Tech Stack & Architecture
 *   **Core Engine:** **LlamaIndex** untuk manajemen Vector Database & Retrieval.
-*   **LLM:** **Google Gemini 1.5 Flash** (via Google AI Studio).
-*   **Sentiment Research:** Python (Pandas, Matplotlib) untuk mapping masalah utama pengguna dari dataset ulasan.
+*   **LLM:** **Google Gemini 2.5 Flash** (via Google AI Studio).
+*   **Sentiment Research:** Python untuk mapping top 5 masalah utama pengguna dari dataset ulasan.
 *   **Backend:** **FastAPI** dengan fitur *Exponential Backoff* & *TTLCache*.
 *   **Frontend:** **Streamlit** dengan kustomisasi Messenger-style Dark UI.
 
