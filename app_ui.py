@@ -1,146 +1,138 @@
 import streamlit as st
 import requests
+import time
 
-# 1. Konfigurasi Halaman - Dark Theme Vibes
+# 1. Konfigurasi Halaman
 st.set_page_config(
-    page_title="ResolveAI | Dark Mode",
-    page_icon="🌑",
-    layout="centered",
-    initial_sidebar_state="collapsed"
+    page_title="ResolveAI | MyPertamina Assistant",
+    page_icon="⛽",
+    layout="wide",
 )
 
-# 2. Injeksi CSS Kustom - Dark Mode & Neon Accents
-st.markdown("""
+# 2. Definisi Warna (Deep Dark)
+bg_main = "#101214"
+bg_secondary = "#202327"
+border_color = "#2F3336"
+accent_blue = "#00529C" 
+accent_red = "#E30613"  
+accent_green = "#009E49" 
+
+# 3. CSS Kustom - Fokus pada Stabilitas & Estetika Ikon
+st.markdown(f"""
 <style>
-    /* Mengubah latar belakang seluruh aplikasi ke Dark */
-    .stApp {
-        background-color: #0F172A; /* Slate 900 */
-        color: #F8FAFC;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-    /* Menyembunyikan elemen bawaan */
-    header, footer, #MainMenu {visibility: hidden;}
+    .stApp {{
+        background-color: {bg_main} !important;
+        font-family: 'Inter', sans-serif;
+    }}
 
-    /* Styling Container Header - Glassmorphism Dark */
-    .header-container {
-        background: rgba(30, 41, 59, 0.7); /* Slate 800 with opacity */
-        padding: 2.5rem;
-        border-radius: 24px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        text-align: center;
-        margin-bottom: 2.5rem;
-    }
+    /* Header Profile */
+    .header-wrapper {{
+        position: fixed;
+        top: 0; left: 0; right: 0; height: 70px;
+        background-color: rgba(16, 18, 20, 0.98);
+        border-bottom: 1px solid {border_color};
+        display: flex; align-items: center; padding: 0 24px;
+        z-index: 1000; backdrop-filter: blur(10px);
+    }}
 
-    .main-header {
-        font-size: 2.2rem;
-        font-weight: 800;
-        letter-spacing: -0.025em;
-        background: linear-gradient(90deg, #38BDF8, #818CF8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
-    }
+    .profile-pic {{
+        width: 44px; height: 44px;
+        background: linear-gradient(135deg, {accent_blue}, {accent_red}, {accent_green});
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        color: white; font-weight: 600; margin-right: 14px;
+    }}
 
-    .sub-header {
-        font-size: 0.95rem;
-        color: #94A3B8;
-        font-weight: 400;
-    }
+    /* Chat Container Tweaks */
+    [data-testid="stChatMessage"] {{
+        background-color: transparent !important;
+        max-width: 800px; margin: 0 auto;
+    }}
 
-    /* Chat Bubbles Styling */
-    [data-testid="stChatMessage"] {
-        background-color: #1E293B !important; /* Slate 800 */
-        border-radius: 15px;
-        margin-bottom: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
+    /* Bubble Styling with Depth */
+    [data-testid="stChatMessageUser"] > div {{
+        background: linear-gradient(135deg, {accent_blue}, #003D75) !important;
+        border-radius: 22px 22px 4px 22px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        color: white !important;
+    }}
 
-    /* Menyesuaikan warna teks input chat */
-    .stChatInput textarea {
-        background-color: #1E293B !important;
-        color: #F8FAFC !important;
-        border: 1px solid #334155 !important;
-    }
+    [data-testid="stChatMessageAssistant"] > div {{
+        background: linear-gradient(135deg, #2D3136, #202327) !important;
+        border-radius: 22px 22px 22px 4px !important;
+        border: 1px solid {border_color} !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        color: white !important;
+    }}
 
-    /* Badge Status */
-    .status-pill {
-        display: inline-flex;
-        align-items: center;
-        padding: 4px 12px;
-        border-radius: 9999px;
-        background: rgba(56, 189, 248, 0.1);
-        color: #38BDF8;
-        font-size: 0.75rem;
-        font-weight: 600;
-        border: 1px solid rgba(56, 189, 248, 0.2);
-        margin-top: 1rem;
-    }
+    /* Text Color Force */
+    [data-testid="stChatMessage"] p {{
+        color: white !important;
+    }}
 
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-        background: #0F172A;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: #334155;
-        border-radius: 10px;
-    }
+    /* Input Bar Style */
+    .stChatInput {{
+        max-width: 800px; margin: 0 auto; padding-bottom: 2rem;
+    }}
+
+    header, footer {{visibility: hidden;}}
 </style>
-""", unsafe_allow_html=True)
 
-# 3. Header UI
-st.markdown("""
-<div class="header-container">
-    <div class="main-header">ResolveAI Assistant</div>
-    <div class="sub-header">
-        Sistem Pakar Resolusi Kendala MyPertamina.<br>
-        Navigasi cerdas untuk pendaftaran dan verifikasi data Anda.
+<div class="header-wrapper">
+    <div class="profile-pic">R</div>
+    <div style="flex-grow: 1;">
+        <b style="color:white; font-size:1.05rem; display:block;">ResolveAI</b>
+        <span style="color:{accent_green}; font-size:0.75rem; font-weight:600;">● Online</span>
     </div>
-    <div class="status-pill">● Neural Engine Active</div>
 </div>
+<div style="margin-top: 90px;"></div>
 """, unsafe_allow_html=True)
 
-# 4. Inisialisasi Memori Obrolan
+# 4. State Memory
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Halo, Rama. Ada kendala teknis apa dengan MyPertamina hari ini? Saya siap menganalisis solusi dari database terbaru."}
+        {"role": "assistant", "content": "Halo, Rama! Saya ResolveAI. Ada yang bisa saya bantu terkait MyPertamina?"}
     ]
 
-# 5. Tampilkan Riwayat Obrolan
+# 5. Loop Chat dengan Ikon Sederhana (Menggunakan Parameter Avatar)
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
+    # Menggunakan avatar bawaan streamlit agar lebih stabil namun tetap ikonik
+    avatar_icon = "👤" if message["role"] == "user" else "🤖"
+    with st.chat_message(message["role"], avatar=avatar_icon):
         st.markdown(message["content"])
 
-# 6. Area Input Chat
-if prompt := st.chat_input("Gambarkan kendala Anda secara detail..."):
-    # Tampilkan pesan user
+# 6. Logic Chat
+if prompt := st.chat_input("Tulis pesan Anda..."):
+    # Tampilkan Pesan User
     st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
+    with st.chat_message("user", avatar="👤"):
         st.markdown(prompt)
 
-    # Respon Assistant
-    with st.chat_message("assistant"):
-        message_placeholder = st.empty()
-        message_placeholder.markdown("⚡ *Menganalisis repositori pengetahuan...*")
+    # Respon AI
+    with st.chat_message("assistant", avatar="🤖"):
+        placeholder = st.empty()
+        placeholder.markdown("🔍 *Mencari solusi...*")
         
         try:
+            # Pastikan URL FastAPI Benar
             response = requests.post(
                 "http://127.0.0.1:8000/api/chat",
                 json={"pesan": prompt},
-                timeout=30 
+                timeout=60
             )
             
             if response.status_code == 200:
-                jawaban_ai = response.json()["jawaban"]
-                message_placeholder.markdown(jawaban_ai)
-                st.session_state.messages.append({"role": "assistant", "content": jawaban_ai})
+                answer = response.json()["jawaban"]
+                # Typing Effect
+                displayed = ""
+                for char in answer:
+                    displayed += char
+                    placeholder.markdown(displayed + "▊")
+                    time.sleep(0.005)
+                placeholder.markdown(displayed)
+                st.session_state.messages.append({"role": "assistant", "content": answer})
             else:
-                message_placeholder.error(f"Koneksi Server Gagal ({response.status_code})")
-                
-        except requests.exceptions.ConnectionError:
-            message_placeholder.markdown("⚠️ **Terminal Error.** Pastikan backend FastAPI Anda aktif di port 8000.")
+                placeholder.error("Backend bermasalah. Coba lagi.")
         except Exception as e:
-            message_placeholder.markdown(f"⚠️ **System Failure:** {e}")
+            placeholder.error(f"Koneksi Gagal: {e}")
